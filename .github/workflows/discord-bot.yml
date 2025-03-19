@@ -4,7 +4,7 @@ on:
   schedule:
     # 매일 오전 9시에 실행 (한국 시간, UTC+9)
     # UTC 기준으로는 0시 (00:00)
-    - cron: "0 0 * * *"
+    - cron: "15 1 * * *"
 
   workflow_dispatch: # 수동 실행 가능하게 추가
 
