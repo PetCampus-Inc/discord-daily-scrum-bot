@@ -1,6 +1,7 @@
 import requests
 import datetime
 import os
+import pytz  # 시간대 처리를 위한 패키지 추가
 
 # 환경변수에서 Webhook URL 가져오기
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
@@ -10,7 +11,9 @@ if not WEBHOOK_URL:
     exit(1)
 
 def send_discord_webhook():
-    today = datetime.date.today()
+    # KST(한국 표준시) 기준으로 현재 날짜 가져오기
+    kst = pytz.timezone('Asia/Seoul')
+    today = datetime.datetime.now(kst).date()
     today_str = today.strftime("%Y-%m-%d")
     
     # 한글 요일 변환 (0:월요일, 1:화요일, ...)
