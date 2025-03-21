@@ -10,8 +10,9 @@ if not WEBHOOK_URL:
     exit(1)
 
 def send_discord_webhook():
-    # 현재 날짜 가져오기
-    today = datetime.datetime.now().date()
+    # 한국시간 기준 오전 7시는 UTC 기준 전날 22시이므로
+    # 다음날 날짜로 설정하여 데일리 스크럼 쓰레드 생성
+    today = datetime.datetime.now().date() + datetime.timedelta(days=1)
     today_str = today.strftime("%Y-%m-%d")
     
     # 한글 요일 변환 (0:월요일, 1:화요일, ...)
