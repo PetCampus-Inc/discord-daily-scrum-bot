@@ -113,6 +113,7 @@ async def create_daily_scrum():
 
         # 🌟 어제 스크럼을 안 쓴 멤버 확인
         missing_members = await get_missing_scrum_members(guild, forum_channel)
+        print(f"🔍 어제 스크럼을 안 쓴 멤버 수: {len(missing_members)}")
 
         # 🌟 포럼에 새 글 작성
         today = datetime.datetime.now(KST).date()
@@ -139,7 +140,7 @@ async def create_daily_scrum():
             post_content += "\n\n🚨 어제 스크럼을 작성하지 않은 분들: " + " ".join([member.mention for member in missing_members])
 
         # thread = await forum_channel.create_thread(name=post_title, content=post_content)
-        print(f"✅ 스크럼 포스트 생성: {thread.name} - {post_content}")
+        print(f"✅ 스크럼 포스트 생성: {post_content}")
         
     except Exception as e:
         print(f"❌ 스크럼 생성 중 오류 발생: {str(e)}")
