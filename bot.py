@@ -90,7 +90,9 @@ async def get_missing_scrum_members(guild, forum_channel):
         print(f"🔍 아카이브된 스레드 수: {archived_count}")
 
         # 🌟 전체 멤버 중 어제 스크럼을 안 쓴 멤버 찾기
+        print(f"🔍 전체 멤버 수: {len(guild.members)}")
         for member in guild.members:
+            print(f"🔍 멤버 찾음: {member.name}")
             if not member.bot and member not in active_members:
                 missing_members.append(member)
 
