@@ -29,6 +29,7 @@ intents = discord.Intents.default()
 intents.messages = True
 intents.guilds = True
 intents.message_content = True
+intents.members = True  # 🌟 멤버 목록을 가져오기 위한 권한 추가
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
