@@ -81,7 +81,9 @@ async def get_missing_scrum_members(guild, forum_channel):
         # 🌟 전체 멤버 중 어제 스크럼을 안 쓴 멤버 찾기
         print(f"📊 전체 멤버 수: {len(guild.members)}")
         for member in guild.members:
-            if not member.bot and member not in active_members:
+            # 🌟 봇이 아니고, PM/Designer 역할을 가지고 있지 않으며, 스크럼을 작성하지 않은 멤버만 포함
+            excluded_roles = ["PM", "Designer"]
+            if not member.bot and not any(role.name in excluded_roles for role in member.roles) and member not in active_members:
                 missing_members.append(member)
 
         return missing_members
@@ -129,8 +131,8 @@ async def create_daily_scrum():
         if missing_members:
             post_content += "\n\n🚨 어제 스크럼을 작성하지 않은 분들: " + " ".join([member.mention for member in missing_members])
 
-        thread = await forum_channel.create_thread(name=post_title, content=post_content)
-        print(f"✅ 스크럼 포스트가 생성되었습니다: {post_title}")
+        # thread = await forum_channel.create_thread(name=post_title, content=post_content)
+        print(f"✅ 스크럼 포스트가 생성되었습니다: {post_title} - {post_content}")
         
     except Exception as e:
         print(f"❌ 스크럼 생성 중 오류 발생: {str(e)}")
