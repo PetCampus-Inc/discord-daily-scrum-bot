@@ -56,18 +56,6 @@ async def daily_scrum_task():
     except Exception as e:
         print(f"❌ 스크럼 생성 중 오류 발생: {str(e)}")
 
-@bot.command(name="scrum")
-async def manual_scrum(ctx):
-    """수동으로 스크럼을 생성하는 명령어"""
-    if ctx.author.guild_permissions.administrator:
-        try:
-            await create_daily_scrum()
-            await ctx.send("✅ 스크럼이 생성되었습니다!")
-        except Exception as e:
-            await ctx.send(f"❌ 스크럼 생성 중 오류가 발생했습니다: {str(e)}")
-    else:
-        await ctx.send("❌ 이 명령어는 관리자만 사용할 수 있습니다.")
-
 async def get_missing_scrum_members(guild, forum_channel):
     """ 🌟 어제 스크럼을 작성하지 않은 멤버 확인 """
     try:
@@ -75,8 +63,8 @@ async def get_missing_scrum_members(guild, forum_channel):
         missing_members = []
         active_members = set()
 
-        # 🌟 어제 날짜의 포스트만 가져오기 (최적화)
-        threads = forum_channel.threads
+        # 🌟 모든 스레드 가져오기 (아카이브된 스레드 포함)
+        threads = await forum_channel.fetch_threads()
         print(f"🔍 포럼 채널에서 찾은 스레드 수: {len(threads)}")
         for thread in threads:
             print(f"스레드 멤버 확인: {guild.members}")
