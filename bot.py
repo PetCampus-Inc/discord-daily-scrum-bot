@@ -79,10 +79,14 @@ async def get_missing_scrum_members(guild, forum_channel):
         threads = forum_channel.threads
         print(f"🔍 포럼 채널에서 찾은 스레드 수: {len(threads)}")
         for thread in threads:
+            print(f"스레드 멤버 확인: {guild.members}")
             print(f"🔍 스레드 객체 정보: {thread}")
             print(f"🔍 스레드 객체 타입: {type(thread)}")
             print(f"🔍 스레드 객체 속성들: {dir(thread)}")
-            if hasattr(thread, 'name') and thread.name.startswith(f"📢 {yesterday}"):
+            print(f"🔍 스레드 객체 vars: {vars(thread)}")
+            print(f"쓰레드 찾았냐?", thread.name.startswith(f"📢 {yesterday}"))
+            
+            if thread.name.startswith(f"📢 {yesterday}"):
                 print(f"🔍 어제 날짜의 스레드 찾음: {thread.name}")
                 # 🌟 최근 100개의 메시지만 확인
                 async for message in thread.history(limit=100):
