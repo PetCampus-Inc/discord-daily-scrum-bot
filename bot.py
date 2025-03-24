@@ -62,19 +62,7 @@ async def get_missing_scrum_members(guild, forum_channel):
         yesterday = datetime.datetime.now(KST).date() - datetime.timedelta(days=1)
         missing_members = []
         active_members = set()
-
-        # 🌟 모든 스레드 가져오기 (아카이브된 스레드 포함)
-        print(f"🔍 포럼 채널 객체 타입: {type(forum_channel)}")
-        print(f"포럼 객체 속성들: {dir(forum_channel)}")
-        
-        # 🌟 활성 스레드 가져오기
-        active_threads = forum_channel.threads
-        print(f"🔍 활성 스레드 수: {len(active_threads)}")
-        
-        # 🌟 get_threads()로 모든 스레드 가져오기
-        # all_threads = await forum_channel.get_threads()
-        # print(f"🔍 get_threads()로 가져온 스레드 수: {len(all_threads)}")
-        
+                
         # 🌟 아카이브된 스레드 가져오기
         archived_count = 0
         async for thread in forum_channel.archived_threads():
@@ -96,6 +84,8 @@ async def get_missing_scrum_members(guild, forum_channel):
                 async for message in thread.history(limit=100):
                     print(f"🔍 메시지 찾음: {message.author.name}")
                     active_members.add(message.author)
+                # 🌟 어제 날짜의 스레드를 찾았으면 바로 break
+                break
         
         print(f"🔍 아카이브된 스레드 수: {archived_count}")
 
