@@ -35,6 +35,16 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 @bot.event
 async def on_ready():
     print(f"✅ {bot.user} 봇이 온라인입니다!")
+    try:
+        await create_daily_scrum()
+        print("✅ 스크럼 생성이 완료되었습니다.")
+        if os.getenv("GITHUB_ACTIONS"):
+            print("✅ GitHub Actions 환경에서 작업이 완료되었습니다.")
+            await bot.close()
+    except Exception as e:
+        print(f"❌ 스크럼 생성 중 오류 발생: {str(e)}")
+        if os.getenv("GITHUB_ACTIONS"):
+            await bot.close()
     if not os.getenv("GITHUB_ACTIONS"):
         daily_scrum_task.start()
 
