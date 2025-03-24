@@ -68,6 +68,35 @@ async def manual_scrum(ctx):
     else:
         await ctx.send("❌ 이 명령어는 관리자만 사용할 수 있습니다.")
 
+async def get_missing_scrum_members(guild, forum_channel):
+    """ 🌟 어제 스크럼을 작성하지 않은 멤버 확인 """
+    try:
+        yesterday = datetime.datetime.now(KST).date() - datetime.timedelta(days=1)
+        missing_members = []
+        active_members = set()
+
+        # 🌟 어제 날짜의 포스트만 가져오기 (최적화)
+        threads = forum_channel.threads
+        print(f"🔍 포럼 채널에서 찾은 스레드 수: {len(threads)}")
+        for thread in threads:
+            if thread.name.startswith(f"📢 {yesterday}"):
+                print(f"🔍 어제 날짜의 스레드 찾음: {thread.name}")
+                # 🌟 최근 100개의 메시지만 확인
+                async for message in thread.history(limit=100):
+                    print(f"🔍 메시지 찾음: {message.author.name}")
+                    active_members.add(message.author)
+
+        # 🌟 전체 멤버 중 어제 스크럼을 안 쓴 멤버 찾기
+        for member in guild.members:
+            if not member.bot and member not in active_members:
+                missing_members.append(member)
+
+        return missing_members
+        
+    except Exception as e:
+        print(f"❌ 스크럼 멤버 확인 중 오류 발생: {str(e)}")
+        return []
+
 async def create_daily_scrum():
     """스크럼 생성 로직"""
     try:
@@ -112,31 +141,6 @@ async def create_daily_scrum():
     except Exception as e:
         print(f"❌ 스크럼 생성 중 오류 발생: {str(e)}")
         raise
-
-async def get_missing_scrum_members(guild, forum_channel):
-    """ 🌟 어제 스크럼을 작성하지 않은 멤버 확인 """
-    try:
-        yesterday = datetime.datetime.now(KST).date() - datetime.timedelta(days=1)
-        missing_members = []
-        active_members = set()
-
-        # 🌟 어제 날짜의 포스트만 가져오기 (최적화)
-        async for thread in forum_channel.threads:
-            if thread.name.startswith(f"📢 {yesterday}"):
-                # 🌟 최근 100개의 메시지만 확인
-                async for message in thread.history(limit=100):
-                    active_members.add(message.author)
-
-        # 🌟 전체 멤버 중 어제 스크럼을 안 쓴 멤버 찾기
-        for member in guild.members:
-            if not member.bot and member not in active_members:
-                missing_members.append(member)
-
-        return missing_members
-        
-    except Exception as e:
-        print(f"❌ 스크럼 멤버 확인 중 오류 발생: {str(e)}")
-        return []
 
 if __name__ == "__main__":
     try:
