@@ -140,7 +140,7 @@ async def create_daily_scrum():
                        "(예: \"오늘 오후 3시에 팀 미팅 예정\")")
 
         if missing_members:
-            post_content += "\n\n🚨 어제 스크럼을 작성하지 않은 분들: " + " ".join([f"{member.display_name}" for member in missing_members])
+            post_content += "\n\n🚨 어제 스크럼을 작성하지 않은 분들: " + " ".join([f"{member.display_name}({member.mention})" for member in missing_members])
 
         thread = await forum_channel.create_thread(name=post_title, content=post_content)
         print(f"✅ 스크럼 포스트 생성: {post_content}")
