@@ -60,7 +60,7 @@ async def create_daily_scrum():
     weekday = weekday_korean[today.weekday()]
 
     post_title = f"📢 {today_str}({weekday}) 데일리 스크럼"
-    post_content = "1️⃣ 어제 한 일\n"
+    post_content = ("1️⃣ 어제 한 일\n"
                    "(예: \"jira 티켓 번호 : 로그인 API 리팩토링 완료\")\n"
                    "(예: \"jira 티켓 번호 : 결제 모듈 오류 수정 및 테스트 진행\")\n\n"
                    "2️⃣ 오늘 할 일\n"
@@ -72,7 +72,7 @@ async def create_daily_scrum():
                    "4️⃣ 작업 시간\n"
                    "(예: \"작업 시간 : 15 ~ 23시\")\n\n"
                    "5️⃣ 기타 공유 사항\n"
-                   "(예: \"오늘 오후 3시에 팀 미팅 예정\")"
+                   "(예: \"오늘 오후 3시에 팀 미팅 예정\")")
 
     if missing_members:
         post_content += "🚨 어제 스크럼을 작성하지 않은 분들: " + " ".join([member.mention for member in missing_members])
@@ -80,7 +80,7 @@ async def create_daily_scrum():
     thread = await forum_channel.create_thread(name=post_title, content=post_content)
     print(f"✅ 스크럼 포스트 생성: {thread.name}")
 
-async def  (guild, forum_channel):
+async def get_missing_scrum_members(guild, forum_channel):
     """ 🌟 어제 스크럼을 작성하지 않은 멤버 확인 """
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     missing_members = []
