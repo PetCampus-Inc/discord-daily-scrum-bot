@@ -117,7 +117,7 @@ async def create_daily_scrum():
         weekday_korean = ["월", "화", "수", "목", "금", "토", "일"]
         weekday = weekday_korean[today.weekday()]
 
-        post_title = f"📢 {today_str}({weekday}) 데일리 스크럼"
+        post_title = f"📢 {today_str}({weekday}) 데일리 스크럼 - 테스트임 댓글달지마세요."
         post_content = ("1️⃣ 어제 한 일\n"
                        "(예: \"jira 티켓 번호 : 로그인 API 리팩토링 완료\")\n"
                        "(예: \"jira 티켓 번호 : 결제 모듈 오류 수정 및 테스트 진행\")\n\n"
