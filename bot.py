@@ -64,8 +64,10 @@ async def get_missing_scrum_members(guild, forum_channel):
         active_members = set()
 
         # 🌟 모든 스레드 가져오기 (아카이브된 스레드 포함)
-        threads = await forum_channel.fetch_active_threads()
-        print(f"🔍 포럼 채널에서 찾은 스레드 수: {len(threads.threads)}")
+        
+        print(f"🔍 포럼 채널 객체 타입: {type(forum_channel)}")
+        print(f"포럼 객체" {forum_channel})
+        print(f"포럼 객체 속성들: {dir(forum_channel)}")
         for thread in threads.threads:
             print(f"스레드 멤버 확인: {guild.members}")
             print(f"🔍 스레드 객체 정보: {thread}")
