@@ -83,7 +83,9 @@ async def get_missing_scrum_members(guild, forum_channel):
             print(f"🔍 스레드 객체 정보: {thread}")
             print(f"🔍 스레드 객체 타입: {type(thread)}")
             print(f"🔍 스레드 객체 속성들: {dir(thread)}")
-            print(f"🔍 스레드 객체 vars: {vars(thread)}")
+            print(f"🔍 스레드 이름: {thread.name}")
+            print(f"🔍 스레드 ID: {thread.id}")
+            print(f"🔍 스레드 생성일: {thread.created_at}")
             print(f"쓰레드 찾았냐?", thread.name.startswith(f"📢 {yesterday}"))
             
             if thread.name.startswith(f"📢 {yesterday}"):
