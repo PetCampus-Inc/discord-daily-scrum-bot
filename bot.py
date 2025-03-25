@@ -64,23 +64,34 @@ async def get_missing_scrum_members(guild, forum_channel):
         missing_members = []
         active_members = set()
                 
-        # 🌟 아카이브된 스레드 가져오기
-        archived_count = 0
-        found_yesterday_thread = False
-        
-        async for thread in forum_channel.archived_threads():
-            print(f"🔍 찾은 스레드: {thread.name}")
-            archived_count += 1
+        # 🌟 활성 스레드 먼저 확인
+        for thread in forum_channel.threads:
+            print(f"🔍 활성 스레드 확인: {thread.name}")
             if thread.name.startswith(f"📢 {yesterday}"):
                 print(f"✅ 어제 날짜의 스크럼 스레드를 찾았습니다: {thread.name}")
                 found_yesterday_thread = True
                 # 🌟 최근 100개의 메시지만 확인
                 async for message in thread.history(limit=100):
                     active_members.add(message.author)
-                # 🌟 어제 날짜의 스레드를 찾았으면 바로 break
                 break
-        
-        print(f"📊 아카이브된 스레드 수: {archived_count}")
+
+        # 🌟 활성 스레드에서 찾지 못한 경우 아카이브된 스레드 확인
+        if not found_yesterday_thread:
+            print("📁 활성 스레드에서 찾지 못해 아카이브된 스레드를 확인합니다.")
+            archived_count = 0
+            
+            async for thread in forum_channel.archived_threads():
+                print(f"🔍 아카이브된 스레드 확인: {thread.name}")
+                archived_count += 1
+                if thread.name.startswith(f"📢 {yesterday}"):
+                    print(f"✅ 어제 날짜의 스크럼 스레드를 찾았습니다: {thread.name}")
+                    found_yesterday_thread = True
+                    # 🌟 최근 100개의 메시지만 확인
+                    async for message in thread.history(limit=100):
+                        active_members.add(message.author)
+                    break
+            
+            print(f"📊 확인한 아카이브된 스레드 수: {archived_count}")
         
         if not found_yesterday_thread:
             print("⚠️ 어제 날짜의 스크럼 스레드를 찾지 못했습니다.")
