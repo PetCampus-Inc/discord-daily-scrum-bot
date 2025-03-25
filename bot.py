@@ -69,6 +69,7 @@ async def get_missing_scrum_members(guild, forum_channel):
         found_yesterday_thread = False
         
         async for thread in forum_channel.archived_threads():
+            print(f"🔍 찾은 스레드: {thread.name}")
             archived_count += 1
             if thread.name.startswith(f"📢 {yesterday}"):
                 print(f"✅ 어제 날짜의 스크럼 스레드를 찾았습니다: {thread.name}")
@@ -111,6 +112,7 @@ async def create_daily_scrum():
             raise ValueError("포럼 채널을 찾을 수 없습니다.")
 
         # 🌟 어제 스크럼을 안 쓴 멤버 확인
+
         missing_members = await get_missing_scrum_members(guild, forum_channel)
         print(f"📊 어제 스크럼을 작성하지 않은 멤버 수: {len(missing_members)}")
 
