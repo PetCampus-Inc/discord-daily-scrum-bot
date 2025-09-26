@@ -1,8 +1,8 @@
-name: Daily Scrum Bot
+name: Weekly Scrum Bot
 
 on:
   schedule:
-    - cron: "0 22 * * *" # 매일 오전 7시 KST (UTC 22시)
+    - cron: "0 22 * * 1" # 매주 월요일 오전 7시 KST (UTC 22시)
   workflow_dispatch: # 수동 실행을 위한 트리거
 
 jobs:

@@ -47,45 +47,49 @@ async def on_ready():
         if os.getenv("GITHUB_ACTIONS"):
             await bot.close()
     if not os.getenv("GITHUB_ACTIONS"):
-        daily_scrum_task.start()
+        weekly_scrum_task.start()
 
-# 🌟 매일 오전 9시에 실행 (한국 시간)
-@tasks.loop(time=datetime.time(hour=9, minute=0, tzinfo=KST))
-async def daily_scrum_task():
+# 🌟 매주 월요일 오전 9시에 실행 (한국 시간)
+@tasks.loop(time=datetime.time(hour=9, minute=0, tzinfo=KST), day_of_week=0)
+async def weekly_scrum_task():
     try:
         await create_daily_scrum()
     except Exception as e:
         print(f"❌ 스크럼 생성 중 오류 발생: {str(e)}")
 
 async def get_missing_scrum_members(guild, forum_channel):
-    """ 🌟 어제 스크럼을 작성하지 않은 멤버 확인 """
+    """ 🌟 지난주 스크럼을 작성하지 않은 멤버 확인 """
     try:
-        yesterday = datetime.datetime.now(KST).date() - datetime.timedelta(days=1)
+        # 지난주 월요일 날짜 계산
+        today = datetime.datetime.now(KST).date()
+        last_monday = today - datetime.timedelta(days=today.weekday() + 7)
+        
         missing_members = []
         active_members = set()
+        found_last_week_thread = False
                 
         # 🌟 활성 스레드 먼저 확인
         for thread in forum_channel.threads:
             print(f"🔍 활성 스레드 확인: {thread.name}")
-            if thread.name.startswith(f"📢 {yesterday}"):
-                print(f"✅ 어제 날짜의 스크럼 스레드를 찾았습니다: {thread.name}")
-                found_yesterday_thread = True
+            if thread.name.startswith(f"📢 {last_monday}"):
+                print(f"✅ 지난주 월요일 날짜의 스크럼 스레드를 찾았습니다: {thread.name}")
+                found_last_week_thread = True
                 # 🌟 최근 100개의 메시지만 확인
                 async for message in thread.history(limit=100):
                     active_members.add(message.author)
                 break
 
         # 🌟 활성 스레드에서 찾지 못한 경우 아카이브된 스레드 확인
-        if not found_yesterday_thread:
+        if not found_last_week_thread:
             print("📁 활성 스레드에서 찾지 못해 아카이브된 스레드를 확인합니다.")
             archived_count = 0
             
             async for thread in forum_channel.archived_threads():
                 print(f"🔍 아카이브된 스레드 확인: {thread.name}")
                 archived_count += 1
-                if thread.name.startswith(f"📢 {yesterday}"):
-                    print(f"✅ 어제 날짜의 스크럼 스레드를 찾았습니다: {thread.name}")
-                    found_yesterday_thread = True
+                if thread.name.startswith(f"📢 {last_monday}"):
+                    print(f"✅ 지난주 월요일 날짜의 스크럼 스레드를 찾았습니다: {thread.name}")
+                    found_last_week_thread = True
                     # 🌟 최근 100개의 메시지만 확인
                     async for message in thread.history(limit=100):
                         active_members.add(message.author)
@@ -93,11 +97,11 @@ async def get_missing_scrum_members(guild, forum_channel):
             
             print(f"📊 확인한 아카이브된 스레드 수: {archived_count}")
         
-        if not found_yesterday_thread:
-            print("⚠️ 어제 날짜의 스크럼 스레드를 찾지 못했습니다.")
+        if not found_last_week_thread:
+            print("⚠️ 지난주 월요일 날짜의 스크럼 스레드를 찾지 못했습니다.")
             return []  # 스레드를 찾지 못했을 경우 빈 리스트 반환
 
-        # 🌟 전체 멤버 중 어제 스크럼을 안 쓴 멤버 찾기
+        # 🌟 전체 멤버 중 지난주 스크럼을 안 쓴 멤버 찾기
         print(f"📊 전체 멤버 수: {len(guild.members)}")
         for member in guild.members:
             # 🌟 봇이 아니고, PM/Designer 역할을 가지고 있지 않으며, 스크럼을 작성하지 않은 멤버만 포함
@@ -122,10 +126,10 @@ async def create_daily_scrum():
         if not forum_channel:
             raise ValueError("포럼 채널을 찾을 수 없습니다.")
 
-        # 🌟 어제 스크럼을 안 쓴 멤버 확인
+        # 🌟 지난주 스크럼을 안 쓴 멤버 확인
 
         missing_members = await get_missing_scrum_members(guild, forum_channel)
-        print(f"📊 어제 스크럼을 작성하지 않은 멤버 수: {len(missing_members)}")
+        print(f"📊 지난주 스크럼을 작성하지 않은 멤버 수: {len(missing_members)}")
 
         # 🌟 포럼에 새 글 작성
         today = datetime.datetime.now(KST).date()
@@ -133,11 +137,11 @@ async def create_daily_scrum():
         weekday_korean = ["월", "화", "수", "목", "금", "토", "일"]
         weekday = weekday_korean[today.weekday()]
 
-        post_title = f"📢 {today_str}({weekday}) 데일리 스크럼"
-        post_content = ("1️⃣ 어제 한 일\n"
+        post_title = f"📢 {today_str}({weekday}) 주간 스크럼"
+        post_content = ("1️⃣ 한 일 (금, 토, 일)\n"
                        "(예: \"jira 티켓 번호 : 로그인 API 리팩토링 완료\")\n"
                        "(예: \"jira 티켓 번호 : 결제 모듈 오류 수정 및 테스트 진행\")\n\n"
-                       "2️⃣ 오늘 할 일\n"
+                       "2️⃣ 할 일 (월, 화) \n"
                        "(예: \"jira 티켓 번호 : 상품 상세 페이지 API 성능 개선\")\n"
                        "(예: \"jira 티켓 번호 : 배치 스케줄러 버그 수정\")\n\n"
                        "3️⃣ 현재 문제/도움 필요한 사항\n"
@@ -146,10 +150,10 @@ async def create_daily_scrum():
                        "4️⃣ 작업 시간\n"
                        "(예: \"작업 시간 : 15 ~ 23시\")\n\n"
                        "5️⃣ 기타 공유 사항\n"
-                       "(예: \"오늘 오후 3시에 팀 미팅 예정\")")
+                       "(예: \"이번주 목요일 오후 3시에 팀 미팅 예정\")")
 
         if missing_members:
-            post_content += "\n\n🚨 어제 스크럼을 작성하지 않은 사람들: " + " ".join([member.mention for member in missing_members])
+            post_content += "\n\n🚨 지난주 스크럼을 작성하지 않은 사람들: " + " ".join([member.mention for member in missing_members])
 
         thread = await forum_channel.create_thread(name=post_title, content=post_content)
         print(f"✅ 스크럼 포스트가 생성되었습니다: {post_title} - {post_content}")
