@@ -50,7 +50,7 @@ async def on_ready():
         weekly_scrum_task.start()
 
 # 🌟 매주 월요일 오전 9시에 실행 (한국 시간)
-@tasks.loop(time=datetime.time(hour=9, minute=0, tzinfo=KST), day_of_week=0)
+@tasks.loop(time=datetime.time(hour=9, minute=0, tzinfo=KST))
 async def weekly_scrum_task():
     try:
         await create_daily_scrum()
